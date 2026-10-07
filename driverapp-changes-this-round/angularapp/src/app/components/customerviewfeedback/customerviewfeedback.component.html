@@ -1,0 +1,60 @@
+<div class="page-container narrow">
+  <div class="page-card" id="myFeedbackCard">
+    <h2 class="page-title steel" id="myFeedbackHeading">My Feedback</h2>
+    <div class="title-line"></div>
+
+    <div class="cards" id="feedbackSkeleton" *ngIf="loading">
+      <app-skeleton variant="feedback" [count]="3" label="Loading your feedback..."></app-skeleton>
+    </div>
+
+    <div class="empty-text" id="noDataMessage" *ngIf="!loading && feedbacks.length === 0">No Data Found</div>
+
+    <div class="cards" *ngIf="!loading && feedbacks.length > 0">
+      <div class="feedback-card" *ngFor="let feedback of feedbacks" [attr.id]="'feedback-' + feedback.feedbackId">
+        <div class="card-head">
+          <span class="category">{{ feedback.category }}</span>
+          <span class="date">{{ toDisplayDate(feedback.date) }}</span>
+        </div>
+        <div class="rating" [attr.aria-label]="feedback.rating + ' out of 5'">{{ starsOf(feedback.rating) }}</div>
+        <p class="text">{{ feedback.feedbackText }}</p>
+        <div class="ai-row" *ngIf="feedback.sentiment">
+          <span class="badge" [ngClass]="sentimentClass(feedback.sentiment)">{{ feedback.sentiment }}</span>
+          <span class="tag" *ngFor="let tag of tagsOf(feedback)">{{ tag }}</span>
+        </div>
+        <div class="card-footer">
+          <button type="button" class="btn btn-primary btn-pill" [id]="'viewDriver-' + feedback.feedbackId" (click)="viewDriverInfo(feedback)">View Driver Info</button>
+          <button type="button" class="btn btn-danger btn-pill" [id]="'delete-' + feedback.feedbackId" (click)="askDelete(feedback)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Driver info -->
+<div class="modal-backdrop" *ngIf="showDriverModal">
+  <div class="modal-box detail-box" id="driverModal">
+    <button type="button" class="modal-close" id="closeDriverModal" (click)="closeDriverModal()">X</button>
+    <h3>Driver Details</h3>
+    <ng-container *ngIf="selectedDriver; else noDriver">
+      <img class="modal-avatar" [src]="getDriverImage(selectedDriver.image)" (error)="useDefaultAvatar($event)" alt="Driver" />
+      <p><strong>Driver Name:</strong> {{ selectedDriver.driverName }}</p>
+      <p><strong>License Number:</strong> {{ selectedDriver.licenseNumber }}</p>
+      <p><strong>Experience Years:</strong> {{ selectedDriver.experienceYears }}</p>
+      <p><strong>Contact Number:</strong> {{ selectedDriver.contactNumber }}</p>
+      <p><strong>Vehicle Type:</strong> {{ selectedDriver.vehicleType }}</p>
+      <p><strong>Hourly Rate:</strong> &#8377;{{ selectedDriver.hourlyRate }}</p>
+    </ng-container>
+    <ng-template #noDriver><p>No driver is linked to this feedback.</p></ng-template>
+  </div>
+</div>
+
+<!-- Delete confirmation -->
+<div class="modal-backdrop" *ngIf="showDeleteModal">
+  <div class="modal-box" id="deleteModal">
+    <p>Are you sure you want to delete this feedback?</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-danger" id="confirmDelete" (click)="confirmDelete()">Yes, Delete</button>
+      <button type="button" class="btn btn-secondary" id="cancelDelete" (click)="cancelDelete()">Cancel</button>
+    </div>
+  </div>
+</div>

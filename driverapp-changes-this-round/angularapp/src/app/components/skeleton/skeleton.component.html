@@ -1,0 +1,43 @@
+<ng-container [ngSwitch]="variant">
+  <!-- driver / request card: avatar, text lines and a row of buttons -->
+  <ng-container *ngSwitchCase="'card'">
+    <div class="sk-card" [class.two]="columns === 2" *ngFor="let i of items" role="status" aria-busy="true" [attr.aria-label]="label">
+      <div class="sk-main">
+        <span class="sk sk-avatar"></span>
+        <div class="sk-text">
+          <span class="sk sk-line w60 tall"></span>
+          <span class="sk sk-line w90"></span>
+          <span class="sk sk-line w80"></span>
+          <span class="sk sk-line w70"></span>
+          <span class="sk sk-line w50"></span>
+        </div>
+      </div>
+      <div class="sk-foot">
+        <span class="sk sk-btn"></span>
+        <span class="sk sk-btn"></span>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- feedback card: header, stars, text -->
+  <ng-container *ngSwitchCase="'feedback'">
+    <div class="sk-card sk-feedback" [class.two]="columns === 2" *ngFor="let i of items" role="status" aria-busy="true" [attr.aria-label]="label">
+      <div class="sk-head">
+        <span class="sk sk-line w40"></span>
+        <span class="sk sk-line w20"></span>
+      </div>
+      <span class="sk sk-line w30"></span>
+      <span class="sk sk-line w100"></span>
+      <span class="sk sk-line w80"></span>
+      <div class="sk-foot">
+        <span class="sk sk-btn"></span>
+        <span class="sk sk-btn"></span>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- plain paragraph lines -->
+  <div class="sk-lines" *ngSwitchCase="'lines'" role="status" aria-busy="true" [attr.aria-label]="label">
+    <span class="sk sk-line" *ngFor="let i of items; let last = last" [ngClass]="last ? 'w60' : 'w100'"></span>
+  </div>
+</ng-container>

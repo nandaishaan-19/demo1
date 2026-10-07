@@ -1,0 +1,107 @@
+<div class="page-container">
+  <div class="page-card" id="feedbackCard">
+    <h2 class="page-title" id="feedbackHeading">Feedback Received</h2>
+    <div class="title-line"></div>
+
+    <div class="toolbar centered">
+      <label>
+        Filter by Category:
+        <select id="categoryFilter" [(ngModel)]="categoryFilter" (ngModelChange)="applyFilters()">
+          <option value="All">All Categories</option>
+          <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+        </select>
+      </label>
+      <label>
+        Filter by Sentiment:
+        <select id="sentimentFilter" [(ngModel)]="sentimentFilter" (ngModelChange)="applyFilters()">
+          <option value="All">All Sentiments</option>
+          <option *ngFor="let sentiment of sentiments" [value]="sentiment">{{ sentiment }}</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table" id="feedbackTable">
+        <thead>
+          <tr>
+            <th>S.NO</th>
+            <th>USER NAME</th>
+            <th>FEEDBACK</th>
+            <th>AI SENTIMENT</th>
+            <th>POSTED DATE</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="loading">
+            <tr class="sk-row" *ngFor="let row of [1, 2, 3, 4, 5]" aria-hidden="true">
+              <td *ngFor="let cell of [1, 2, 3, 4, 5, 6]"><span class="sk sk-line"></span></td>
+            </tr>
+          </ng-container>
+          <tr class="empty-row" id="noDataMessage" *ngIf="!loading && filteredFeedbacks.length === 0">
+            <td colspan="6">No Data Found</td>
+          </tr>
+          <tr *ngFor="let feedback of filteredFeedbacks; let i = index" [attr.id]="'feedback-' + feedback.feedbackId">
+            <td>{{ i + 1 }}</td>
+            <td>{{ feedback.user?.username }}</td>
+            <td>{{ feedback.feedbackText }}</td>
+            <td>
+              <span class="badge" [ngClass]="sentimentClass(feedback.sentiment)" *ngIf="feedback.sentiment; else noSentiment">{{ feedback.sentiment }}</span>
+              <ng-template #noSentiment><span class="muted">&mdash;</span></ng-template>
+              <div class="tags" *ngIf="tagsOf(feedback).length">
+                <span class="tag" *ngFor="let tag of tagsOf(feedback)">{{ tag }}</span>
+              </div>
+            </td>
+            <td>{{ toDisplayDate(feedback.date) }}</td>
+            <td class="actions">
+              <button type="button" class="btn btn-primary btn-pill" (click)="showProfile(feedback)">Show Profile</button>
+              <button type="button" class="btn btn-primary btn-pill" (click)="viewDriverInfo(feedback)">View Driver Info</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- User details -->
+<div class="modal-backdrop" *ngIf="showUserModal">
+  <div class="modal-box left-box" id="userModal">
+    <h3 class="small">User Details:</h3>
+    <p><strong>Email:</strong> {{ selectedUser?.email }}</p>
+    <p><strong>Username:</strong> {{ selectedUser?.username }}</p>
+    <p><strong>Mobile Number:</strong> {{ selectedUser?.mobileNumber }}</p>
+    <div class="modal-actions"><button type="button" class="btn btn-primary" id="closeUserModal" (click)="closeUserModal()">Close</button></div>
+  </div>
+</div>
+
+<!-- Driver details + AI review summary -->
+<div class="modal-backdrop" *ngIf="showDriverModal">
+  <div class="modal-box left-box driver-box" id="driverModal">
+    <button type="button" class="modal-close" id="closeDriverModal" (click)="closeDriverModal()">&times;</button>
+    <h3 class="small">Driver Details</h3>
+    <ng-container *ngIf="selectedDriver; else noDriver">
+      <p><strong>Driver Name:</strong> {{ selectedDriver.driverName }}</p>
+      <p><strong>License Number:</strong> {{ selectedDriver.licenseNumber }}</p>
+      <p><strong>Experience Years:</strong> {{ selectedDriver.experienceYears }}</p>
+      <p><strong>Vehicle Type:</strong> {{ selectedDriver.vehicleType }}</p>
+      <p><strong>Hourly Rate:</strong> &#8377;{{ selectedDriver.hourlyRate }}</p>
+
+      <div class="ai-panel" id="aiReviewSummary" *ngIf="summaryLoading || summary">
+        <div class="ai-title">&#10024; AI Review Summary</div>
+        <app-skeleton *ngIf="summaryLoading" variant="lines" [count]="4" label="Loading the AI review summary..."></app-skeleton>
+        <ng-container *ngIf="summary">
+          <div class="ai-meta">{{ summary.feedbackCount }} review(s) &middot; Avg rating {{ summary.averageRating }}/5 &middot; AI score {{ summary.aiScore }}/100</div>
+          <p class="ai-text">{{ summary.summary }}</p>
+          <div *ngIf="summary.strengths.length"><strong>Strengths</strong>
+            <ul><li *ngFor="let item of summary.strengths">{{ item }}</li></ul>
+          </div>
+          <div *ngIf="summary.improvements.length"><strong>Areas to improve</strong>
+            <ul><li *ngFor="let item of summary.improvements">{{ item }}</li></ul>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+    <ng-template #noDriver><p>No driver is linked to this feedback.</p></ng-template>
+  </div>
+</div>

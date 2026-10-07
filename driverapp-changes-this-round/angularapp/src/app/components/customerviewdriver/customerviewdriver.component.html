@@ -1,0 +1,49 @@
+<div class="page-container narrow">
+  <div class="page-card" id="availableDriversCard">
+    <h2 class="page-title steel" id="availableDriversHeading">Available Drivers</h2>
+    <div class="title-line"></div>
+
+    <div class="search-row">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search by Driver Name, Vehicle Type, or License..." [(ngModel)]="searchText" />
+    </div>
+
+    <form class="ai-row" id="aiSearchForm" (ngSubmit)="runAiSearch()">
+      <span class="ai-label">&#10024; AI Search</span>
+      <input type="text" id="aiSearchInput" name="aiQuery" placeholder='Try: "experienced SUV driver for a night outstation trip"' [(ngModel)]="aiQuery" />
+      <button type="submit" class="btn ai-btn" id="aiSearchButton" [disabled]="aiLoading || !aiQuery.trim()">{{ aiLoading ? 'Searching...' : 'Find Drivers' }}</button>
+      <button type="button" class="btn clear-btn" id="aiClearButton" (click)="clearAiSearch()">Clear</button>
+    </form>
+    <div class="ai-note" id="aiNote" *ngIf="aiActive">Showing AI best matches for: "{{ aiQuery }}"</div>
+    <div class="ai-note warn" *ngIf="aiMessage">{{ aiMessage }}</div>
+
+    <div class="cards" id="driversSkeleton" *ngIf="loadingDrivers">
+      <app-skeleton variant="card" [count]="3" label="Loading drivers..."></app-skeleton>
+    </div>
+
+    <div class="empty-text" id="noDataMessage" *ngIf="!loadingDrivers && displayedDrivers.length === 0">Oops! No records found</div>
+
+    <div class="cards" *ngIf="!loadingDrivers && displayedDrivers.length > 0">
+      <div class="driver-card" *ngFor="let driver of displayedDrivers" [attr.id]="'driver-' + driver.driverId">
+        <div class="card-main">
+          <img class="avatar" [src]="getDriverImage(driver.image)" (error)="useDefaultAvatar($event)" alt="Driver" />
+          <div class="info">
+            <h3>{{ driver.driverName }}</h3>
+            <p><strong>Vehicle Type:</strong> {{ driver.vehicleType }}</p>
+            <p><strong>License:</strong> {{ driver.licenseNumber }}</p>
+            <p><strong>Phone:</strong> {{ driver.contactNumber }}</p>
+            <p><strong>Address:</strong> {{ driver.address }}</p>
+            <p><strong>Experience:</strong> {{ driver.experienceYears }} years</p>
+            <p><strong>Hourly Rate:</strong> &#8377;{{ driver.hourlyRate }}</p>
+            <p><strong>Status:</strong> {{ driver.availabilityStatus }}</p>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button type="button" class="btn requested" [class.approved]="isApproved(driver)" [class.awaiting]="!isApproved(driver)" [id]="'requested-' + driver.driverId" *ngIf="isRequested(driver); else requestButton" disabled>{{ isApproved(driver) ? '✓ Already Approved' : 'Awaiting Approval' }}</button>
+          <ng-template #requestButton>
+            <button type="button" class="btn btn-success" [id]="'request-' + driver.driverId" [disabled]="!canRequest(driver)" (click)="requestDriver(driver)">Request</button>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

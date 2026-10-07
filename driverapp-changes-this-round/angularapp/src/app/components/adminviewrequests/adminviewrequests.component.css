@@ -1,0 +1,25 @@
+.toolbar input.wide { flex: 1; min-width: 240px; max-width: 460px; font-weight: 400; }
+.table-wrap { margin-top: 4px; }
+.actions { white-space: nowrap; }
+.actions .btn { margin: 2px 2px; font-size: 12px; }
+.status-cell.trip-end { background: #fbd9dc; }
+.status-cell.cancelled { color: #8a8f94; font-weight: 700; }
+.phase { display: block; width: fit-content; margin-top: 3px; padding: 1px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; color: #fff; }
+.phase-upcoming { background: #0a6fe8; }
+.phase-ongoing { background: #e08a00; }
+.stage-alert { color: #ffd4d4; animation: blink 1.1s ease-in-out infinite; }
+
+.detail-box { min-width: 340px; }
+.detail-box h3 { margin-bottom: 10px; }
+.detail-box p { margin: 6px 0; font-size: 13px; }
+.modal-avatar { width: 84px; height: 84px; margin: 0 auto 14px; display: block; object-fit: cover; border-radius: 50%; border: 3px solid #1d8a8a; background: #fff; }
+
+.stage-box { min-width: 420px; padding-bottom: 24px; }
+.stages { display: flex; align-items: center; justify-content: center; gap: 4px; margin: 6px 0 4px; flex-wrap: wrap; }
+.stage { padding: 6px 18px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.stage.done { background: #2fa84f; color: #fff; }
+.stage.idle { background: #ececec; color: #9a9a9a; }
+.stage.rejected { background: #f0443a; color: #fff; }
+.arrow { font-size: 10px; color: #bbb; }
+.arrow.on { color: #2fa84f; }
+.close-request { margin-top: 18px; padding: 8px 20px; }

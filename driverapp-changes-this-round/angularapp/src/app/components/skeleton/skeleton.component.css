@@ -1,0 +1,30 @@
+/* The host adds no box of its own, so the cards sit directly in the page's card container. */
+:host { display: contents; }
+
+.sk-card {
+  display: flex;
+  flex-direction: column;
+  width: calc(33.33% - 11px);
+  min-width: 250px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+.sk-card.two { width: calc(50% - 8px); min-width: 300px; }
+.sk-feedback { gap: 10px; padding: 14px; }
+.sk-main { display: flex; gap: 12px; padding: 16px 14px 10px; flex: 1; }
+.sk-text { flex: 1; display: flex; flex-direction: column; gap: 10px; padding-top: 4px; }
+.sk-head { display: flex; justify-content: space-between; gap: 12px; }
+.sk-head .sk-line { flex: 1; }
+.sk-foot {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  background: #f3f5f7;
+}
+.sk-feedback .sk-foot { margin: 6px -14px -14px; }
+.sk-lines { display: flex; flex-direction: column; gap: 9px; padding: 4px 0; }
+
+@media (max-width: 760px) { .sk-card { width: 100%; } }

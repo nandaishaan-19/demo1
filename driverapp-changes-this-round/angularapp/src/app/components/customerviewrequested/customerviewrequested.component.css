@@ -1,0 +1,20 @@
+.page-container.narrow { max-width: 920px; }
+.search-row { display: flex; justify-content: center; margin-bottom: 14px; }
+.search-row .search-input { width: min(520px, 100%); }
+.cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+.form-error.center { text-align: center; margin: 0 0 12px; }
+.request-card { overflow: hidden; display: flex; flex-direction: column; width: calc(50% - 8px); min-width: 300px; background: #fff; border-radius: 6px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); }
+.card-main { display: flex; gap: 12px; padding: 14px; flex: 1; }
+.avatar { width: 56px; height: 56px; flex: 0 0 56px; object-fit: cover; border-radius: 50%; border: 3px solid #1d8a8a; background: #fff; }
+.info h3 { margin: 0 0 8px; font-size: 17px; color: #333; }
+.info p { margin: 4px 0; font-size: 12.5px; color: #555; word-break: break-word; }
+.status { font-weight: 700; }
+.s-cancelled { color: #8a8f94; }
+.s-pending { color: #b4540a; } .s-approved { color: #1b8a3a; } .s-rejected { color: #c62828; }
+.s-tripend { color: #0a6fe8; } .s-closed { color: #666; }
+.card-footer { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; padding: 10px; background: #f3f5f7; border-radius: 0 0 6px 6px; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.trip-hint { padding: 8px 12px; font-size: 12px; line-height: 1.4; color: #6b5200; background: #fff8e1; border-top: 1px solid #f1e2a8; border-radius: 0 0 6px 6px; text-align: center; }
+.pay-loading { text-align: center; padding: 10px 0; min-width: 260px; }
+.pay-loading p { margin: 12px 0 0; color: #555; font-size: 13px; }
+@media (max-width: 760px) { .request-card { width: 100%; } }

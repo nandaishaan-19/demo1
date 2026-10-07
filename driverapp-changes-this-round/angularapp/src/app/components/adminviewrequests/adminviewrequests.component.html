@@ -1,0 +1,90 @@
+<div class="page-container">
+  <div class="page-card" id="requestsCard">
+    <h2 class="page-title" id="requestsHeading">Driver Requests for Approval</h2>
+    <div class="title-line"></div>
+
+    <div class="toolbar">
+      <input type="text" id="searchInput" class="wide" placeholder="Search by Driver Name or Pickup Location..." [(ngModel)]="searchText" (ngModelChange)="applyFilters()" />
+      <label>
+        Show:
+        <select id="statusFilter" [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()">
+          <option *ngFor="let filter of filters" [value]="filter.value">{{ filter.label }} ({{ countFor(filter.value) }})</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table" id="requestsTable">
+        <thead>
+          <tr>
+            <th>S.NO</th>
+            <th>USERNAME</th>
+            <th>PICKUP LOCATION</th>
+            <th>DROP LOCATION</th>
+            <th>TRIP DATE</th>
+            <th>STATUS</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="loading">
+            <tr class="sk-row" *ngFor="let row of [1, 2, 3, 4, 5]" aria-hidden="true">
+              <td *ngFor="let cell of [1, 2, 3, 4, 5, 6, 7]"><span class="sk sk-line"></span></td>
+            </tr>
+          </ng-container>
+          <tr class="empty-row" id="noDataMessage" *ngIf="!loading && filteredRequests.length === 0">
+            <td colspan="7">Oops! No records found</td>
+          </tr>
+          <tr *ngFor="let request of filteredRequests; let i = index" [attr.id]="'request-' + request.driverRequestId">
+            <td>{{ i + 1 }}</td>
+            <td>{{ request.user?.username }}</td>
+            <td>{{ request.pickupLocation }}</td>
+            <td>{{ request.dropLocation }}</td>
+            <td>{{ toDateString(request.tripDate) }}</td>
+            <td class="status-cell" [class.trip-end]="request.status === 'Trip End'" [class.blink]="request.status === 'Trip End'" [class.cancelled]="request.status === 'Cancelled'">
+              {{ request.status }}
+              <span class="phase" [ngClass]="'phase-' + phaseOf(request).toLowerCase()" *ngIf="request.status === 'Approved'">{{ phaseOf(request) }}</span>
+            </td>
+            <td class="actions">
+              <button type="button" class="btn btn-primary btn-pill" (click)="openDriverDetails(request)">Show Driver Details</button>
+              <button type="button" class="btn btn-success btn-pill" *ngIf="canApprove(request)" (click)="approve(request)">Approve</button>
+              <button type="button" class="btn btn-danger btn-pill" *ngIf="canReject(request)" (click)="reject(request)">Reject</button>
+              <button type="button" class="btn btn-primary btn-pill" [class.stage-alert]="request.status === 'Trip End'" (click)="openStages(request)">View Stage</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Driver details -->
+<div class="modal-backdrop" *ngIf="showDriverModal && selectedRequest">
+  <div class="modal-box detail-box" id="driverDetailsModal">
+    <button type="button" class="modal-close" id="closeDriverDetails" (click)="closeDriverModal()">X</button>
+    <h3>Driver Details</h3>
+    <img class="modal-avatar" [src]="getDriverImage(selectedRequest.driver?.image)" (error)="useDefaultAvatar($event)" alt="Driver" />
+    <p><strong>Driver Name:</strong> {{ selectedRequest.driver?.driverName }}</p>
+    <p><strong>License Number:</strong> {{ selectedRequest.driver?.licenseNumber }}</p>
+    <p><strong>Experience Years:</strong> {{ selectedRequest.driver?.experienceYears }}</p>
+    <p><strong>Contact Number:</strong> {{ selectedRequest.driver?.contactNumber }}</p>
+    <p><strong>Vehicle Type:</strong> {{ selectedRequest.driver?.vehicleType }}</p>
+    <p><strong>Hourly Rate:</strong> &#8377;{{ selectedRequest.driver?.hourlyRate }}</p>
+    <p><strong>Address:</strong> {{ selectedRequest.driver?.address }}</p>
+  </div>
+</div>
+
+<!-- Request progression -->
+<div class="modal-backdrop" *ngIf="showStageModal && selectedRequest">
+  <div class="modal-box stage-box" id="stageModal">
+    <button type="button" class="modal-close" id="closeStageModal" (click)="closeStageModal()">X</button>
+    <h3>Request Progression</h3>
+    <div class="stages">
+      <ng-container *ngFor="let stage of visibleStages; let last = last">
+        <span class="stage" [ngClass]="stageClass(stage)">{{ stage }}</span>
+        <span class="arrow" *ngIf="!last" [class.on]="stageClass(visibleStages[visibleStages.indexOf(stage) + 1]) !== 'idle'">&#9654;</span>
+      </ng-container>
+    </div>
+    <button type="button" class="btn btn-primary close-request" id="closeRequestButton" *ngIf="canCloseRequest" (click)="closeRequest()">Close Request</button>
+  </div>
+</div>

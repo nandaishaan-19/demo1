@@ -1,0 +1,68 @@
+<div class="page-container">
+  <div class="page-card" id="driversCard">
+    <h2 class="page-title left" id="driversHeading">Drivers</h2>
+    <div class="title-line"></div>
+
+    <div class="toolbar">
+      <label>
+        Search by:
+        <input type="text" id="searchInput" placeholder="Driver Name or Vehicle Type" [(ngModel)]="searchText" (ngModelChange)="applyFilters()" />
+      </label>
+      <label>
+        Filter by Status:
+        <select id="statusFilter" [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()">
+          <option value="All">All Status</option>
+          <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="cards-area" id="driversSkeleton" *ngIf="loading">
+      <app-skeleton variant="card" [count]="3" label="Loading drivers..."></app-skeleton>
+    </div>
+
+    <div class="empty-text" id="noDataMessage" *ngIf="!loading && filteredDrivers.length === 0">Oops! No data found.</div>
+
+    <div class="cards-area" *ngIf="!loading && filteredDrivers.length > 0">
+      <div class="driver-card" *ngFor="let driver of filteredDrivers" [attr.id]="'driver-' + driver.driverId">
+        <div class="card-header">
+          <img class="avatar" [src]="getDriverImage(driver.image)" (error)="useDefaultAvatar($event)" alt="Driver" />
+        </div>
+
+        <div class="card-body">
+          <h3>{{ driver.driverName }}</h3>
+          <p><strong>Vehicle Type:</strong> {{ driver.vehicleType }}</p>
+          <p><strong>License:</strong> {{ driver.licenseNumber }}</p>
+          <p><strong>Phone:</strong> {{ driver.contactNumber }}</p>
+          <p><strong>Address:</strong> {{ driver.address }}</p>
+          <p><strong>Experience:</strong> {{ driver.experienceYears }} years</p>
+          <p><strong>Hourly Rate:</strong> &#8377;{{ driver.hourlyRate }}</p>
+          <p><strong>Status:</strong> {{ driver.availabilityStatus }}</p>
+        </div>
+
+        <div class="card-footer">
+          <button type="button" class="btn btn-success" [id]="'edit-' + driver.driverId" [disabled]="isLocked(driver)" (click)="editDriver(driver)">Edit</button>
+          <div class="action-wrap">
+            <button type="button" class="btn btn-warning btn-pill" [id]="'action-' + driver.driverId" (click)="toggleActionMenu(driver)">Action</button>
+            <div class="action-menu" *ngIf="openActionDriverId === driver.driverId">
+              <button type="button" *ngFor="let status of otherStatuses(driver)" (click)="changeStatus(driver, status)">{{ status }}</button>
+              <!-- Delete is the last option of the Action menu (inactive drivers cannot be deleted, as before) -->
+              <button type="button" class="menu-delete" [id]="'delete-' + driver.driverId" [disabled]="isLocked(driver)" [attr.title]="isLocked(driver) ? 'Inactive drivers cannot be deleted' : null" (click)="openDeletePopup(driver)">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showDeletePopup">
+  <div class="modal-box" id="deletePopup">
+    <p>Are you sure you want to delete this driver?</p>
+    <div class="form-error center" *ngIf="deleteError">{{ deleteError }}</div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-danger" id="confirmDelete" (click)="confirmDelete()">Yes, Delete</button>
+      <button type="button" class="btn btn-secondary" id="cancelDelete" (click)="cancelDelete()">Cancel</button>
+    </div>
+  </div>
+</div>
